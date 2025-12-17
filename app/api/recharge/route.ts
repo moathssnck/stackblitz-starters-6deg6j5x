@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      console.error("[v0] API recharge error:", error)
+      console.error(" API recharge error:", error)
       return NextResponse.json({ error: "Failed to create transaction" }, { status: 500 })
     }
 
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       data,
     })
   } catch (error) {
-    console.error("[v0] API error:", error)
+    console.error(" API error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -98,7 +98,7 @@ export async function GET() {
       data,
     })
   } catch (error) {
-    console.error("[v0] API error:", error)
+    console.error(" API error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

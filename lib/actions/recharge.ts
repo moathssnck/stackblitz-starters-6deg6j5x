@@ -63,7 +63,7 @@ export async function createRecharge(request: RechargeRequest) {
     .single()
 
   if (error) {
-    console.error("[v0] Recharge creation error:", error)
+    console.error(" Recharge creation error:", error)
     return {
       error: "Failed to create recharge transaction. Please try again.",
       data: null,
@@ -80,7 +80,7 @@ export async function createRecharge(request: RechargeRequest) {
     .single()
 
   if (updateError) {
-    console.error("[v0] Transaction update error:", updateError)
+    console.error(" Transaction update error:", updateError)
   }
 
   revalidatePath("/dashboard")
@@ -118,7 +118,7 @@ export async function getRechargeHistory() {
     .limit(50)
 
   if (error) {
-    console.error("[v0] Fetch history error:", error)
+    console.error(" Fetch history error:", error)
     return {
       error: "Failed to fetch transaction history",
       data: null,

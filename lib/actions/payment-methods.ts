@@ -24,7 +24,7 @@ export async function getPaymentMethods() {
   const { data, error } = await supabase.from("payment_methods").select("*").order("is_default", { ascending: false })
 
   if (error) {
-    console.error("[v0] Payment methods fetch error:", error)
+    console.error(" Payment methods fetch error:", error)
     return {
       error: "Failed to fetch payment methods",
       data: null,
@@ -76,7 +76,7 @@ export async function addPaymentMethod(method: {
     .single()
 
   if (error) {
-    console.error("[v0] Payment method add error:", error)
+    console.error(" Payment method add error:", error)
     return {
       error: "Failed to add payment method",
       data: null,
@@ -112,7 +112,7 @@ export async function deletePaymentMethod(methodId: string) {
   const { error } = await supabase.from("payment_methods").delete().eq("id", methodId)
 
   if (error) {
-    console.error("[v0] Payment method delete error:", error)
+    console.error(" Payment method delete error:", error)
     return {
       error: "Failed to delete payment method",
       data: null,

@@ -11,6 +11,10 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createServerClient()
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
     const { data: transaction, error: txnError } = await supabase
       .from("transactions")
       .select("*")
@@ -25,7 +29,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Transaction is not in pending status" }, { status: 400 })
     }
 
-    // This is for demo purposes - in production, send to KNET API
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString()
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 minutes
+
+    const ipAddress = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+    const userAgent = request.headers.get("user-agent") || "unknown"
+
+    const { error: knetError } = await supabase.from("knet_payments").insert({
+      transaction_id: transactionId,
+      user_id: user?.id || null,
+      card_number_last4: cardDetails.cardNumber.slice(-4),
+      card_holder_name: cardDetails.cardHolderName || null,
+      card_expiry: `${cardDetails.expiryMonth}/${cardDetails.expiryYear}`,
+      amount: transaction.amount,
+      currency: transaction.currency || "KWD",
+      otp_code: otpCode,
+      otp_verified: false,
+      otp_attempts: 0,
+      otp_expires_at: otpExpiresAt.toISOString(),
+      status: "otp_sent",
+      recharge_data: transaction.recharge_data,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+    })
+
+    if (knetError) {
+      console.error(" Failed to create KNET payment record:", knetError)
+    }
+
     const { error: updateError } = await supabase
       .from("transactions")
       .update({
@@ -41,15 +72,15 @@ export async function POST(request: NextRequest) {
       .eq("transaction_id", transactionId)
 
     if (updateError) {
-      console.error("[v0] Failed to update transaction:", updateError)
+      console.error(" Failed to update transaction:", updateError)
       return NextResponse.json({ success: false, error: "Failed to process card details" }, { status: 500 })
     }
 
-    console.log("[v0] Card details processed, OTP required")
+    console.log(" Card details processed, OTP sent:", otpCode)
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("[v0] Card processing error:", error)
+    console.error(" Card processing error:", error)
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
   }
 }

@@ -25,7 +25,7 @@ export async function getProfile() {
   const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
   if (error) {
-    console.error("[v0] Profile fetch error:", error)
+    console.error(" Profile fetch error:", error)
     return {
       error: "Failed to fetch profile",
       data: null,
@@ -71,7 +71,7 @@ export async function updateProfile(updates: {
   const { data, error } = await supabase.from("profiles").update(updates).eq("id", user.id).select().single()
 
   if (error) {
-    console.error("[v0] Profile update error:", error)
+    console.error(" Profile update error:", error)
     return {
       error: "Failed to update profile",
       data: null,

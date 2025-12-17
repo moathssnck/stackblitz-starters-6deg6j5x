@@ -152,7 +152,7 @@ function KnetPaymentContent() {
         },
         (payload) => {
           const status = payload.new.status
-          console.log("[v0] Payment status update:", status)
+          console.log(" Payment status update:", status)
 
           if (status === "otp_required") {
             setIsLoading(false)
@@ -249,7 +249,7 @@ function KnetPaymentContent() {
 
       if (data.success) {
         // Backend will update status to otp_required, listener will handle UI update
-        console.log("[v0] Card details submitted successfully")
+        console.log(" Card details submitted successfully")
       } else {
         setIsLoading(false)
         setErrorMessage(data.error || "Failed to process card details")
@@ -257,7 +257,7 @@ function KnetPaymentContent() {
     } catch (error) {
       setIsLoading(false)
       setErrorMessage("An error occurred. Please try again.")
-      console.error("[v0] Card submission error:", error)
+      console.error(" Card submission error:", error)
     }
   }
 
@@ -286,7 +286,7 @@ function KnetPaymentContent() {
 
       if (data.success) {
         // Backend will update status, listener will handle redirect
-        console.log("[v0] OTP submitted successfully")
+        console.log(" OTP submitted successfully")
       } else {
         setIsLoading(false)
         setErrorMessage(data.error || "Invalid OTP")
@@ -294,7 +294,7 @@ function KnetPaymentContent() {
     } catch (error) {
       setIsLoading(false)
       setErrorMessage("An error occurred. Please try again.")
-      console.error("[v0] OTP submission error:", error)
+      console.error(" OTP submission error:", error)
     }
   }
 
@@ -310,7 +310,7 @@ function KnetPaymentContent() {
         body: JSON.stringify({ transactionId }),
       })
     } catch (error) {
-      console.error("[v0] Resend OTP error:", error)
+      console.error(" Resend OTP error:", error)
     }
   }
 

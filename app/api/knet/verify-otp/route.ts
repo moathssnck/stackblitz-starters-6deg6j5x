@@ -11,63 +11,99 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createServerClient()
 
-    const { data: transaction, error: txnError } = await supabase
+    const { data: knetPayment, error: knetError } = await supabase
+      .from("knet_payments")
+      .select("*")
+      .eq("transaction_id", transactionId)
+      .single()
+
+    if (knetError || !knetPayment) {
+      return NextResponse.json({ success: false, error: "Payment record not found" }, { status: 404 })
+    }
+
+    if (new Date(knetPayment.otp_expires_at) < new Date()) {
+      return NextResponse.json({ success: false, error: "OTP has expired" }, { status: 400 })
+    }
+
+    if (knetPayment.otp_attempts >= 3) {
+      await supabase.from("knet_payments").update({ status: "failed" }).eq("id", knetPayment.id)
+      return NextResponse.json({ success: false, error: "Maximum OTP attempts exceeded" }, { status: 400 })
+    }
+
+    const isValidOTP = otp === knetPayment.otp_code
+
+    if (!isValidOTP) {
+      await supabase
+        .from("knet_payments")
+        .update({
+          otp_attempts: knetPayment.otp_attempts + 1,
+        })
+        .eq("id", knetPayment.id)
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Invalid OTP. ${2 - knetPayment.otp_attempts} attempts remaining`,
+        },
+        { status: 400 },
+      )
+    }
+
+    const { error: knetUpdateError } = await supabase
+      .from("knet_payments")
+      .update({
+        otp_verified: true,
+        status: "completed",
+        completed_at: new Date().toISOString(),
+        payment_reference: `KNET-${Date.now()}`,
+      })
+      .eq("id", knetPayment.id)
+
+    if (knetUpdateError) {
+      console.error(" Failed to update KNET payment:", knetUpdateError)
+      return NextResponse.json({ success: false, error: "Failed to verify OTP" }, { status: 500 })
+    }
+
+    const { data: transaction } = await supabase
       .from("transactions")
       .select("*")
       .eq("transaction_id", transactionId)
       .single()
 
-    if (txnError || !transaction) {
-      return NextResponse.json({ success: false, error: "Transaction not found" }, { status: 404 })
-    }
-
-    if (transaction.status !== "otp_required") {
-      return NextResponse.json({ success: false, error: "Transaction is not awaiting OTP" }, { status: 400 })
-    }
-
-    // For demo, we'll simulate OTP verification (accept any 6-digit OTP)
-    const isValidOTP = otp.length === 6
-
-    if (!isValidOTP) {
-      return NextResponse.json({ success: false, error: "Invalid OTP" }, { status: 400 })
-    }
-
-    const { error: updateError } = await supabase
-      .from("transactions")
-      .update({
-        status: "completed",
-        completed_at: new Date().toISOString(),
-        payment_gateway_response: {
-          otp_verified: true,
-          timestamp: new Date().toISOString(),
-        },
-      })
-      .eq("transaction_id", transactionId)
-
-    if (updateError) {
-      console.error("[v0] Failed to update transaction:", updateError)
-      return NextResponse.json({ success: false, error: "Failed to verify OTP" }, { status: 500 })
-    }
-
-    const rechargeData = transaction.recharge_data as any
-    if (rechargeData && rechargeData.items) {
-      for (const item of rechargeData.items) {
-        await supabase.from("recharges").insert({
-          user_id: transaction.user_id,
-          transaction_id: transaction.id,
-          phone_number: item.phoneNumber,
-          amount: item.amount,
-          validity_days: Number.parseInt(item.validity),
+    if (transaction) {
+      await supabase
+        .from("transactions")
+        .update({
           status: "completed",
+          completed_at: new Date().toISOString(),
+          payment_gateway_response: {
+            otp_verified: true,
+            payment_reference: `KNET-${Date.now()}`,
+            timestamp: new Date().toISOString(),
+          },
         })
+        .eq("transaction_id", transactionId)
+
+      const rechargeData = transaction.recharge_data as any
+      if (rechargeData && rechargeData.items) {
+        for (const item of rechargeData.items) {
+          await supabase.from("recharge_transactions").insert({
+            user_id: transaction.user_id,
+            phone_number: item.phoneNumber,
+            amount: item.amount,
+            validity_days: Number.parseInt(item.validity) || 30,
+            status: "completed",
+            transaction_reference: `REF-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+          })
+        }
       }
     }
 
-    console.log("[v0] OTP verified, payment completed")
+    console.log(" OTP verified, payment completed")
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("[v0] OTP verification error:", error)
+    console.error(" OTP verification error:", error)
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
   }
 }

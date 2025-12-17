@@ -118,7 +118,7 @@ export default function RechargePage() {
         alert("حدث خطأ في معالجة الطلب. يرجى المحاولة مرة أخرى.")
       }
     } catch (error) {
-      console.error("[v0] Payment initiation error:", error)
+      console.error(" Payment initiation error:", error)
       alert("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.")
     } finally {
       setIsSubmitting(false)
@@ -214,6 +214,7 @@ export default function RechargePage() {
               </label>
               <Input
                 type="tel"
+                maxLength={8}
                 placeholder="أدخل الرقم: 99XXXXXXX"
                 value={item.phoneNumber}
                 onChange={(e) => updateItem(item.id, "phoneNumber", e.target.value)}

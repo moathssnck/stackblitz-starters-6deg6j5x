@@ -10,24 +10,18 @@ export async function initiateKnetPayment(rechargeData: {
   try {
     const supabase = await createServerClient()
 
-    // Get authenticated user
+    // Get authenticated user (optional for guest checkout)
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return { success: false, error: "User not authenticated" }
-    }
 
     // Generate a unique transaction ID
     const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`
 
-    // Store the transaction in database
     const { data: transaction, error: dbError } = await supabase
       .from("transactions")
       .insert({
-        user_id: user.id,
+        user_id: user?.id || null,
         transaction_id: transactionId,
         amount: rechargeData.total,
         currency: "KWD",
@@ -39,7 +33,7 @@ export async function initiateKnetPayment(rechargeData: {
       .single()
 
     if (dbError) {
-      console.error("[v0] Database error:", dbError)
+      console.error(" Database error:", dbError)
       return { success: false, error: "Failed to create transaction" }
     }
 
@@ -51,7 +45,7 @@ export async function initiateKnetPayment(rechargeData: {
       transactionId,
     }
   } catch (error) {
-    console.error("[v0] Payment initiation error:", error)
+    console.error(" Payment initiation error:", error)
     return { success: false, error: "Internal server error" }
   }
 }

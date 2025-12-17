@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       .eq("transaction_id", tranid)
 
     if (updateError) {
-      console.error("[v0] Failed to update transaction:", updateError)
+      console.error(" Failed to update transaction:", updateError)
     }
 
     // If payment is successful, process the recharge
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(`/payment/failed?txn=${tranid}`, request.url))
     }
   } catch (error) {
-    console.error("[v0] KNET callback error:", error)
+    console.error(" KNET callback error:", error)
     return NextResponse.redirect(new URL("/payment/error", request.url))
   }
 }

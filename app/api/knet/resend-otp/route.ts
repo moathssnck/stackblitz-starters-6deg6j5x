@@ -11,21 +11,38 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createServerClient()
 
-    const { data: transaction, error: txnError } = await supabase
-      .from("transactions")
+    const { data: knetPayment, error: knetError } = await supabase
+      .from("knet_payments")
       .select("*")
       .eq("transaction_id", transactionId)
       .single()
 
-    if (txnError || !transaction) {
-      return NextResponse.json({ success: false, error: "Transaction not found" }, { status: 404 })
+    if (knetError || !knetPayment) {
+      return NextResponse.json({ success: false, error: "Payment record not found" }, { status: 404 })
     }
 
-    console.log("[v0] Resending OTP for transaction:", transactionId)
+    const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString()
+    const newOtpExpiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 minutes
+
+    const { error: updateError } = await supabase
+      .from("knet_payments")
+      .update({
+        otp_code: newOtpCode,
+        otp_expires_at: newOtpExpiresAt.toISOString(),
+        otp_attempts: 0,
+      })
+      .eq("id", knetPayment.id)
+
+    if (updateError) {
+      console.error(" Failed to update OTP:", updateError)
+      return NextResponse.json({ success: false, error: "Failed to resend OTP" }, { status: 500 })
+    }
+
+    console.log(" Resending OTP for transaction:", transactionId, "New OTP:", newOtpCode)
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("[v0] Resend OTP error:", error)
+    console.error(" Resend OTP error:", error)
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
   }
 }
