@@ -1,0 +1,154 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.content-block {
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.form-card {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.form-card:last-child {
+  border-bottom: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.three-column {
+  gap: 10px;
+}
+
+.column-label {
+  flex: 0 0 40%;
+  font-weight: 600;
+  color: #333;
+}
+
+.column-value {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.column-long {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.text-label {
+  border: none;
+  font-weight: 600;
+  color: #000;
+}
+
+input[type="tel"],
+input[type="password"],
+input[type="text"] {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.notification {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: 10px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .column-label {
+    flex: 0 0 100%;
+    margin-bottom: 5px;
+  }
+
+  .column-value,
+  .column-long {
+    flex: 1 1 100%;
+  }
+
+  .three-column {
+    flex-direction: column;
+  }
+
+  .three-column input,
+  .three-column select {
+    width: 100% !important;
+  }
+}
