@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { Users, TrendingUp, CreditCard, DollarSign, Activity } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
