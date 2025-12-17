@@ -130,7 +130,7 @@ export default function RechargePage() {
   return (
     <div dir="rtl" className="min-h-screen bg-[#F5F5F7]">
       {/* Header */}
-      <header className="bg-[#2B1B3D] px-4 py-4 flex items-center justify-between">
+      <header className="bg-[#2B1B3D] px-4 py-4 flex items-center justify-between" dir="ltr" >
         <div className="flex items-center gap-4">
           <button className="text-white">
             <Menu className="h-6 w-6" />
@@ -140,11 +140,11 @@ export default function RechargePage() {
           </button>
           <div className="h-px w-[1px] bg-white/30 mx-2" />
           <button className="bg-white rounded-full p-3">
-            <ShoppingCart className="h-6 w-6 text-[#2B1B3D]" />
+            <ShoppingCart className="h-6 w-6 text-pink-500" />
           </button>
         </div>
         <img
-          src="/images/myzain.png"
+          src="/lojgo.png"
           alt="Zain Logo"
           className="h-10 object-contain"
           style={{ filter: "brightness(0) invert(1)" }}
@@ -249,7 +249,6 @@ export default function RechargePage() {
                     <span className="text-[#86868B] text-xs">
                       د.ك {item.bonus.amount} مجاني صالح لمدة {item.bonus.validity}
                     </span>
-                    <span className="text-[#E20074] font-bold text-lg">+ مجاناً د.ك {item.bonus.amount}</span>
                     <span className="bg-[#E20074] text-white text-xs px-2 py-1 rounded">عرض</span>
                   </div>
                 )}
