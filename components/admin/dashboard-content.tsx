@@ -210,7 +210,7 @@ export function DashboardContent({
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <p className="font-medium">{transaction.phone_number}</p>
-                          <Badge className={getStatusColor(transaction.status)}>{transaction.status}</Badge>
+                          <div className={getStatusColor(transaction.status)}>{transaction.status}</div>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">
                           Amount: {Number(transaction.amount).toFixed(3)} KWD | Validity: {transaction.validity_days}{" "}
@@ -249,7 +249,7 @@ export function DashboardContent({
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <p className="font-medium">TXN: {payment.transaction_id}</p>
-                          <Badge className={getStatusColor(payment.status)}>{payment.status}</Badge>
+                          <div className={getStatusColor(payment.status)}>{payment.status}</div>
                         </div>
                         <p className="text-lg font-bold text-[#E20074]">
                           {Number(payment.amount).toFixed(3)} {payment.currency}
